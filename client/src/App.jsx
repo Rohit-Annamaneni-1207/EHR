@@ -1,4 +1,4 @@
-import { Footer, Loader, Navbar, Services, Transactions, Welcome } from './components';
+import { Footer, Loader, Navbar, Services, Transactions, Auth } from './components';
 import { EHRContext } from './context/ehrContext'
 
 const App = ()=>{
@@ -7,7 +7,7 @@ const App = ()=>{
         <div className='gradient-bg-welcome'>
           <Navbar />
         </div>
-        <Welcome />
+        <Auth />
         <Services />
         <Transactions />
         <Footer />

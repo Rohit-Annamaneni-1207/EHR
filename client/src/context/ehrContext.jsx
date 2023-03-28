@@ -12,7 +12,9 @@ const getEthereumContract = () => {
     const signer = provider.getSigner();
     const ehrContract = new ethers.Contract(contractAddress, contractABI, signer);
 
-    console.log(provider, signer, ehrContract);
+    console.log({provider:provider, signer:signer, contract:ehrContract});
+
+    return ehrContract;
 }
 
 export const EHRProvider = ({ children }) => {
@@ -21,9 +23,16 @@ export const EHRProvider = ({ children }) => {
     const [docData, setDocData] = useState({ name: "" });
     const [patientData, setPatientData] = useState({ name: "" });
 
-    const handleChange = (e, name) => {
-        setFormData
+    const handleChangeDoc = (e, name) => {
+        setDocData((prevState) => ({ ...prevState, [name]: e.target.value }));
+        // console.log(docData);
     }
+
+    const handleChangePatient = (e, name) => {
+        setPatientData((prevState) => ({ ...prevState, [name]: e.target.value }));
+    }
+
+
 
     const checkIfWalletIsConnected = async () => {
         try{
@@ -67,6 +76,14 @@ export const EHRProvider = ({ children }) => {
     const addDoctor = async () => {
         try {
             if (!ethereum) return alert("Please install metamask");
+
+            const { name } = docData;
+            const ehrContract = getEthereumContract();
+
+            const transactionHash = await ehrContract.addDoctor(name);
+            console.log(`LOADING: ${transactionHash}`);
+            await transactionHash.wait();
+            console.log(`SUCCESS: ${transactionHash}`);
             
         } catch (error) {
             console.log(error)
@@ -75,13 +92,44 @@ export const EHRProvider = ({ children }) => {
         }
     }
 
+    const addPatient = async () => {
+        try {
+            if (!ethereum) return alert("Please install metamask");
+
+            const { name } = patientData;
+            const ehrContract = getEthereumContract();
+
+            const transactionHash = await ehrContract.addPatient(name);
+            console.log(`LOADING: ${transactionHash}`);
+            await transactionHash.wait();
+            console.log(`SUCCESS: ${transactionHash}`);
+            
+        } catch (error) {
+            console.log(error)
+
+            throw new Error("No ethereum object.");
+        }
+    }
+
+
     useEffect(() => {
         checkIfWalletIsConnected();
         // console.log(currentAccount);
     }, [])
 
     return (
-        <EHRContext.Provider value={{ connectWallet, currentAccount }}>
+        <EHRContext.Provider value={{
+                connectWallet,
+                currentAccount, 
+                docData, 
+                setDocData, 
+                patientData, 
+                setPatientData, 
+                handleChangeDoc, 
+                handleChangePatient, 
+                addDoctor ,
+                addPatient
+            }}>
             {children}
         </EHRContext.Provider>
     );
