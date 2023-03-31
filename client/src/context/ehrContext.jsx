@@ -23,6 +23,11 @@ export const EHRProvider = ({ children }) => {
     const [docData, setDocData] = useState({ name: "" });
     const [patientData, setPatientData] = useState({ name: "" });
     const [userType, setUserType] = useState("guest");
+    const [addressData, setAddressData] = useState({ address:"" });
+
+    const handleChangeAddress = (e, name) => {
+        setAddressData((prevState) => ({ ...prevState, [name]: e.target.value }));
+    }
 
     const handleChangeDoc = (e, name) => {
         setDocData((prevState) => ({ ...prevState, [name]: e.target.value }));
@@ -129,6 +134,25 @@ export const EHRProvider = ({ children }) => {
         }
     }
 
+    const grantAccess = async () => {
+        try {
+            if (!ethereum) return alert("Please install metamask");
+
+            const { address } = addressData;
+            const ehrContract = getEthereumContract();
+
+            const transactionHash = await ehrContract.grant_access(address);
+            console.log(`LOADING: ${transactionHash}`);
+            await transactionHash.wait();
+            console.log(`SUCCESS: ${transactionHash}`);
+            
+        } catch (error) {
+            console.log(error)
+
+            throw new Error("No ethereum object.");
+        }
+    }
+
 
     useEffect(() => {
         checkIfWalletIsConnected();
@@ -149,7 +173,11 @@ export const EHRProvider = ({ children }) => {
                 addPatient,
                 userType,
                 setUserType,
-                login
+                login,
+                addressData,
+                setAddressData,
+                grantAccess,
+                handleChangeAddress
             }}>
             {children}
         </EHRContext.Provider>

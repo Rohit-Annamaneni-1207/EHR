@@ -87,6 +87,17 @@ contract ehr {
         return "guest";
     }
 
+    function getNumberOfRecords (address p_id) public view returns (uint num)
+    {
+        if (doctor_map[msg.sender].id == msg.sender)
+        {
+            require(patient_map[p_id].doctorsPermitted[msg.sender] == true && doctor_map[msg.sender].patientGranted[p_id]==true, "read access not granted");
+        }
+        require(patient_map[p_id].id == p_id, "Patient doesn't exist");
+
+        return patient_map[p_id].totalRecords;
+    }
+
     function addPatient (string memory _name) public senderIsNotPatient
     {
         // require(patient_map[msg.sender].id != msg.sender, "This patient already exists.");
@@ -112,12 +123,20 @@ contract ehr {
 
     function revoke_access (address d_id) public senderIsPatient
     {
+        require(doctor_map[d_id].id == d_id, "Doctor does not exist");
+        require(patient_map[msg.sender].doctorsPermitted[d_id]==true && doctor_map[d_id].patientGranted[msg.sender]==true, "Access already granted");
 
+        patient_map[msg.sender].doctorsPermitted[d_id] = false;
+        doctor_map[d_id].patientGranted[msg.sender] = false;
+        // validate patient
+
+        emit grantedAccess(msg.sender, d_id);
     }
 
     function addRecord (address p_id, string memory rec_id) public senderIsDoctor
     {
         require(patient_map[p_id].id == p_id, "Not a Patient");
+        require(patient_map[p_id].doctorsPermitted[msg.sender] == true && doctor_map[msg.sender].patientGranted[p_id]==true, "Unauthorized entry");
 
         Patient storage _patient = patient_map[p_id];
         _patient.totalRecords++;
