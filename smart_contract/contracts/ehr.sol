@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 contract ehr {
     struct Record
     {
-        string r_id;
+        string r_id; //ipfs hash
         // string p_id;
         // string d_id;
         uint timestamp;
