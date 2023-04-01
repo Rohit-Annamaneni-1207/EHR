@@ -35,7 +35,11 @@ const Services = () => {
         addressData,
         setAddressData,
         grantAccess,
-        handleChangeAddress} = useContext(EHRContext);
+        handleChangeAddress,
+        recordData,
+        setRecordData,
+        handleChangeRecord,
+        add_record} = useContext(EHRContext);
 
         const handleGrantSubmit = (e) => {
             const { address } = addressData;
@@ -50,6 +54,21 @@ const Services = () => {
 
             grantAccess();
 
+        }
+
+        const handleRecordSubmit = (e) => {
+            const { p_address, record_id } = recordData;
+            console.log(p_address, record_id);
+
+            e.preventDefault();
+
+            if (!p_address || !record_id)
+            {
+                alert("Enter the details before submit.");
+                return;
+            }
+
+            add_record();
         }
 
     if (userType=="guest")
@@ -91,6 +110,25 @@ const Services = () => {
         return(
             <div>
                 DOCTOR PAGE
+                <br />
+                <br />
+                <br />
+                ADD RECORD
+                <br />
+                <div className="p-5 sm:w-100 w-full flex flex-col justify-center items-center blue-glassmorphism form-bg">
+                <Input placeholder={"Patient address"} name={"p_address"} type={"text"} handleChange={handleChangeRecord}/>
+                <Input placeholder={"Record id"} name={"record_id"} type={"text"} handleChange={handleChangeRecord}/>
+                    <div>
+                        
+                        <button
+                            type="button"
+                            onClick={handleRecordSubmit}
+                            className="text-white w-full mt-2 border-[1px] p-2 border-[#322279fe] hover:bg-[#442aaf] rounded-full cursor-pointer"
+                            >
+                            Submit Record
+                        </button>
+                    </div>
+                </div>
             </div>
         );
     }
