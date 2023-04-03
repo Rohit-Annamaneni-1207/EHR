@@ -40,7 +40,11 @@ const Services = () => {
         recordData,
         setRecordData,
         handleChangeRecord,
-        add_record} = useContext(EHRContext);
+        add_record,
+        handleChangeReq,
+        RecordReq,
+        setRecordReq,
+        fetchRecordsForDoctor} = useContext(EHRContext);
 
         const handleGrantSubmit = (e) => {
             const { address } = addressData;
@@ -70,6 +74,24 @@ const Services = () => {
             }
 
             add_record();
+        }
+
+        const handleReqSubmit = (e) => {
+            const { p_id } = RecordReq;
+
+            e.preventDefault();
+
+            if (!p_id)
+            {
+                alert("Enter the details before submit.");
+                return;
+            }
+
+            fetchRecordsForDoctor();
+        }
+
+        const placeholderfunc = () => {
+
         }
 
     if (userType=="guest")
@@ -126,7 +148,6 @@ const Services = () => {
                 <Input placeholder={"Patient address"} name={"p_address"} type={"text"} handleChange={handleChangeRecord}/>
                 <Input placeholder={"Record id"} name={"record_id"} type={"text"} handleChange={handleChangeRecord}/>
                     <div>
-                        
                         <button
                             type="button"
                             onClick={handleRecordSubmit}
@@ -134,6 +155,26 @@ const Services = () => {
                             >
                             Submit Record
                         </button>
+                    </div>
+                </div>
+                <br />
+                <div>
+                    <h1><b><u>Search patient records</u></b></h1>
+                    <div className="p-5 sm:w-100 w-full flex flex-col justify-center items-center blue-glassmorphism form-bg">
+                        <Input placeholder={"Patient address"} name={"p_id"} type={"text"} handleChange={handleChangeReq} />
+                        <div>
+                            <button
+                                type="button"
+                                onClick={handleReqSubmit}
+                                className="text-white w-full mt-2 border-[1px] p-2 border-[#322279fe] hover:bg-[#442aaf] rounded-full cursor-pointer"
+                                >
+                                Get records
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <h1><b><u>Record List</u></b></h1>
+                        <Records />
                     </div>
                 </div>
             </div>

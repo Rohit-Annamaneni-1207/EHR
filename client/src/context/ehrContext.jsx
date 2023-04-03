@@ -25,6 +25,7 @@ export const EHRProvider = ({ children }) => {
     const [userType, setUserType] = useState("guest");
     const [addressData, setAddressData] = useState({ address:"" });
     const [recordData, setRecordData] = useState({ p_address: "", record_id: ""});
+    const [RecordReq, setRecordReq] = useState({p_id:""});
     const [recordList, setRecordList] = useState([]);
 
     const handleChangeAddress = (e, name) => {
@@ -44,7 +45,9 @@ export const EHRProvider = ({ children }) => {
         setRecordData((prevState) => ({ ...prevState, [name]: e.target.value }));
     }
 
-
+    const handleChangeReq = (e, name) => {
+        setRecordReq((prevState) => ({ ...prevState, [name]: e.target.value }));
+    }
 
     const checkIfWalletIsConnected = async () => {
         try{
@@ -222,6 +225,34 @@ export const EHRProvider = ({ children }) => {
         }
     }
 
+    const fetchRecordsForDoctor = async () => {
+        try {
+            if (!ethereum) return alert("Please install metamask");
+            if (!currentAccount) return alert("Connect wallet account to view records");
+
+            const ehrContract = getEthereumContract();
+
+            const {p_id} = RecordReq;
+            
+            let num_records = await ehrContract.getNumberOfRecords(p_id);
+            console.log(num_records);
+
+            let rec_list = []; 
+
+            for (let i=1; i<=num_records; i++)
+            {
+                let r = await ehrContract.getPatientRecords(p_id, i);
+                rec_list.push(r);
+            }
+
+            setRecordList(rec_list);
+        } catch (error) {
+            console.log(error)
+
+            throw new Error("No ethereum object.");
+        }
+    }
+
 
     useEffect(() => {
         checkIfWalletIsConnected();
@@ -253,7 +284,11 @@ export const EHRProvider = ({ children }) => {
                 add_record,
                 recordList,
                 setRecordList,
-                fetchRecordsForPatient
+                fetchRecordsForPatient,
+                RecordReq,
+                setRecordReq,
+                handleChangeReq,
+                fetchRecordsForDoctor
             }}>
             {children}
         </EHRContext.Provider>
