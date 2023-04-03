@@ -35,7 +35,10 @@ const Auth = () => {
         setUserType,
         login,
         addressData,
-        setAddressData} = useContext(EHRContext);
+        setAddressData,
+        recordList,
+        setRecordList,
+        fetchRecordsForPatient} = useContext(EHRContext);
     
     const handleSubmitDoc = (e) => {
         const { name } = docData;
@@ -120,6 +123,7 @@ const Auth = () => {
     }
     else if (userType=="patient")
     {
+        // fetchRecordsForPatient();
         return (
             <div>
                 Patient page

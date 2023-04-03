@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 
-import { Footer, Loader, Navbar, Services, Transactions, Auth } from './components';
+import { Footer, Loader, Navbar, Services, Auth } from './components';
 import { EHRContext } from './context/ehrContext'
 
 const App = ()=>{
@@ -28,7 +28,6 @@ const App = ()=>{
         </div>
         <Auth />
         <Services />
-        <Transactions />
         <Footer />
       </div>
   )

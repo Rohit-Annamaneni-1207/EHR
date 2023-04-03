@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 
 import { Loader } from ".";
 import { EHRContext } from "../context/ehrContext";
+import { Records } from ".";
 
 const Input = ({ placeholder , name, type, value ,handleChange }) => {
     return(
@@ -101,6 +102,12 @@ const Services = () => {
                             Grant Access
                         </button>
                     </div>
+                </div>
+                <br/>
+                <br/>
+                <div>
+                    <h1><b><u>Record List</u></b></h1>
+                    <Records />
                 </div>
             </div>
         );

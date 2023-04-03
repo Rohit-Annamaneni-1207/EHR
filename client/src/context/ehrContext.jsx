@@ -25,6 +25,7 @@ export const EHRProvider = ({ children }) => {
     const [userType, setUserType] = useState("guest");
     const [addressData, setAddressData] = useState({ address:"" });
     const [recordData, setRecordData] = useState({ p_address: "", record_id: ""});
+    const [recordList, setRecordList] = useState([]);
 
     const handleChangeAddress = (e, name) => {
         setAddressData((prevState) => ({ ...prevState, [name]: e.target.value }));
@@ -125,12 +126,29 @@ export const EHRProvider = ({ children }) => {
     const login = async () => {
         try {
             if (!ethereum) return alert("Please install metamask");
+            if (!currentAccount) return alert("Please connect a wallet before attempting to login");
             const ehrContract = getEthereumContract();
 
             let user = await ehrContract.login();
             console.log(user);
 
             setUserType(user);
+
+            if (user == "patient")
+            {
+                let num_records = await ehrContract.getNumberOfRecords(currentAccount);
+                console.log(num_records);
+
+                let rec_list = []; 
+
+                for (let i=1; i<=num_records; i++)
+                {
+                    let r = await ehrContract.getPatientRecords(currentAccount, i);
+                    rec_list.push(r);
+                }
+
+                setRecordList(rec_list);
+            }
 
         } catch (error) {
             console.log(error)
@@ -178,6 +196,32 @@ export const EHRProvider = ({ children }) => {
         }
     }
 
+    const fetchRecordsForPatient = async () => {
+        try {
+            if (!ethereum) return alert("Please install metamask");
+            if (!currentAccount) return alert("Connect wallet account to view records");
+
+            const ehrContract = getEthereumContract();
+            
+            let num_records = await ehrContract.getNumberOfRecords(currentAccount);
+            console.log(num_records);
+
+            let rec_list = []; 
+
+            for (let i=1; i<=num_records; i++)
+            {
+                let r = await ehrContract.getPatientRecords(currentAccount, i);
+                rec_list.push(r);
+            }
+
+            setRecordList(rec_list);
+        } catch (error) {
+            console.log(error)
+
+            throw new Error("No ethereum object.");
+        }
+    }
+
 
     useEffect(() => {
         checkIfWalletIsConnected();
@@ -206,7 +250,10 @@ export const EHRProvider = ({ children }) => {
                 recordData,
                 setRecordData,
                 handleChangeRecord,
-                add_record
+                add_record,
+                recordList,
+                setRecordList,
+                fetchRecordsForPatient
             }}>
             {children}
         </EHRContext.Provider>
